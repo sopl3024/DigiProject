@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Organizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Profile pic (placeholder) -->
+    <div class="profile-pic"></div>
+
+    <!-- Reminders -->
+    <section class="reminders">
+        <h2>Reminders</h2>
+        <form action="/add" method="post">
+            <input type="text" name="title" placeholder="Reminder Title" required>
+            <input type="date" name="due_date" required>
+            <select name="category">
+                <option value="Reminder">Reminder</option>
+                <option value="Exam">Exam</option>
+                <option value="Class">Class</option>
+            </select>
+            <button type="submit">Add</button>
+        </form>
+
+        <ul>
+            {% for r in reminders %}
+                <li class="{{ r[3]|lower }}">
+                    {{ r[1] }} – {{ r[2] }} – {{ r[3] }}
+                    {% if not r[4] %}
+                        <a href="/complete/{{ r[0] }}">✅</a>
+                    {% else %}
+                        ✔️
+                    {% endif %}
+                    <a href="/delete/{{ r[0] }}">🗑️</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <!-- Timetable placeholder -->
+    <section class="timetable">
+        <h2>Timetable</h2>
+        <table>
+            <tr><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr>
+            <tr><td colspan="5">[Add logic here later to display reminders on correct days]</td></tr>
+        </table>
+    </section>
+
+    <!-- Dropdown filters -->
+    <section class="filters">
+        <h2>Filters</h2>
+        <select><option>Reminder</option></select>
+        <select><option>Exam</option></select>
+        <select><option>Class</option></select>
+    </section>
+</body>
+</html>
