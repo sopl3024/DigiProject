@@ -54,6 +54,16 @@ def complete(reminder_id):
     conn.close()
     return redirect(url_for('index'))
 
+# Mark as not completed
+@app.route('/uncomplete/<int:reminder_id>')
+def uncomplete(reminder_id):
+    conn = sqlite3.connect('reminders.db')
+    c = conn.cursor()
+    c.execute("UPDATE reminders SET completed = 0 WHERE id = ?", (reminder_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('index'))
+
 # Delete reminder
 @app.route('/delete/<int:reminder_id>')
 def delete(reminder_id):
