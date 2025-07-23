@@ -13,6 +13,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             due_date TEXT NOT NULL,
+            due_time TEXT NOT NULL,
             category TEXT NOT NULL,
             completed INTEGER DEFAULT 0
         )
@@ -35,11 +36,12 @@ def index():
 def add():
     title = request.form['title']
     due_date = request.form['due_date']
+    due_time = request.form['due_time']
     category = request.form['category']
     conn = sqlite3.connect('reminders.db')
     c = conn.cursor()
-    c.execute("INSERT INTO reminders (title, due_date, category) VALUES (?, ?, ?)",
-              (title, due_date, category))
+    c.execute("INSERT INTO reminders (title, due_date, due_time, category) VALUES (?, ?, ?, ?)",
+              (title, due_date, due_time, category))
     conn.commit()
     conn.close()
     return redirect(url_for('index'))

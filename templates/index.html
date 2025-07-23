@@ -11,6 +11,7 @@
         <form method="POST" action="/add">
             <input type="text" name="title" placeholder="Reminder Title" required>
             <input type="date" name="due_date" required>
+            <input type="time" name="due_time" required>
             <select name="category">
                 <option value="Reminder">Reminder</option>
                 <option value="Exam">Exam</option>
@@ -18,12 +19,11 @@
             </select>
             <button type="submit">Add</button>
         </form>
-
         <ul class="reminder-list">
             {% for r in reminders %}
-            <li class="{% if r[4] %}completed{% endif %}">
-                <strong>{{ r[1] }}</strong> ({{ r[2] }}) - {{ r[3] }}
-                {% if not r[4] %}
+            <li class="{% if r[5] %}completed{% endif %}">
+                <strong>{{ r[1] }}</strong> ({{ r[2] }}) - {{ r[3] }} - {{r[4]}}
+                {% if not r[5] %}
                 <a href="/complete/{{ r[0] }}">✅</a>
                 {% else %}
                 <a href="/uncomplete/{{ r[0] }}">✔️</a>
