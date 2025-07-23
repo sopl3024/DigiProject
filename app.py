@@ -1,4 +1,4 @@
-
+# Imports
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
@@ -76,7 +76,7 @@ def delete(reminder_id):
     conn.close()
     return redirect(url_for('index'))
 
-# Start the app
+# Start the application
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
