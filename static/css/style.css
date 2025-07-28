@@ -56,3 +56,9 @@ table td div {
     padding: 5px;
     border-radius: 4px;
 }
+
+select[name="due_time"] {
+    width: 100px;
+    font-size: 14px;
+    padding: 5px;
+}
