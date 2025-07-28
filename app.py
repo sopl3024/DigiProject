@@ -53,7 +53,9 @@ def index():
 def add():
     title = request.form['title']
     due_date = request.form['due_date']
-    due_time = request.form['due_time']
+    due_time_am = request.form['due_time_am']
+    due_time_pm = request.form['due_time_pm']
+    due_time = due_time_am if due_time_am else due_time_pm
     category = request.form['category']
     conn = sqlite3.connect('reminders.db')
     c = conn.cursor()

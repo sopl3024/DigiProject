@@ -57,8 +57,10 @@ table td div {
     border-radius: 4px;
 }
 
-select[name="due_time"] {
-    width: 100px;
-    font-size: 14px;
+select[name="due_time_am"],
+select[name="due_time_pm"] {
+    width: 120px;
     padding: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
 }
