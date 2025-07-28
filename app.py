@@ -21,8 +21,8 @@ def init_db():
     conn.commit()
     conn.close()
 
+# Convert date to day of week
 from datetime import datetime
-
 @app.template_filter('datetimeformat')
 def datetimeformat(value, format='%a'):
     try:
