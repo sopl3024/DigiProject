@@ -49,3 +49,10 @@ table th, table td {
     padding: 10px;
     text-align: center;
 }
+
+table td div {
+    background-color: #e8f0ff;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 4px;
+}

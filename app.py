@@ -21,15 +21,32 @@ def init_db():
     conn.commit()
     conn.close()
 
+from datetime import datetime
+
+@app.template_filter('datetimeformat')
+def datetimeformat(value, format='%a'):
+    try:
+        dt = datetime.strptime(value, '%Y-%m-%d')
+        return dt.strftime(format)
+    except:
+        return value
+
 # Home page
 @app.route('/')
 def index():
     conn = sqlite3.connect('reminders.db')
     c = conn.cursor()
+
+    # All reminders
     c.execute("SELECT * FROM reminders")
     reminders = c.fetchall()
+
+    # Only class reminders for timetable
+    c.execute("SELECT title, due_date, due_time FROM reminders WHERE category='Class'")
+    classes = c.fetchall()
+
     conn.close()
-    return render_template('index.html', reminders=reminders)
+    return render_template('index.html', reminders=reminders, classes=classes)
 
 # Add new reminder
 @app.route('/add', methods=['POST'])

@@ -32,11 +32,28 @@
             </li>
             {% endfor %}
         </ul>
-
+        
         <h2>Timetable (Mon–Fri)</h2>
         <table>
-            <tr><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr>
-            <tr><td colspan="5">[Haven't done yet]</td></tr>
+            <tr>
+                <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th>
+            </tr>
+            <tr>
+                {% set days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] %}
+                {% for day in days %}
+                <td>
+                    {% for class in classes %}
+                        {% set weekday = class[1]|datetimeformat("%a") %}
+                        {% if weekday == day %}
+                            <div>
+                                <strong>{{ class[0] }}</strong><br>
+                                <small>{{ class[2] }}</small>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
         </table>
 
         <h2>Filters</h2>
