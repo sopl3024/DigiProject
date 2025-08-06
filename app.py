@@ -33,24 +33,23 @@ def index():
     with sqlite3.connect('data.db') as conn:
         c = conn.cursor()
 
-        # Sort all reminders by due_date and due_time
+        # Sort all reminders by combined datetime
         c.execute("""
             SELECT * FROM reminders
-            ORDER BY due_date ASC, due_time ASC
+            ORDER BY datetime(due_date || ' ' || due_time) ASC
         """)
         reminders = c.fetchall()
 
-        # Sort only "Class" category reminders for the selected week
+        # Sort only "Class" category reminders for timetable by combined datetime
         c.execute("""
             SELECT title, due_date, due_time
             FROM reminders
             WHERE category='Class' AND week=?
-            ORDER BY due_date ASC, due_time ASC
+            ORDER BY datetime(due_date || ' ' || due_time) ASC
         """, (selected_week,))
         classes = c.fetchall()
 
     return render_template('index.html', reminders=reminders, classes=classes, selected_week=selected_week)
-
 
 @app.route('/add', methods=['POST'])
 def add():
