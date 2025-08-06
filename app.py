@@ -32,13 +32,25 @@ def index():
     selected_week = request.args.get('week', 'A')
     with sqlite3.connect('data.db') as conn:
         c = conn.cursor()
-        c.execute("SELECT * FROM reminders")
+
+        # Sort all reminders by due_date and due_time
+        c.execute("""
+            SELECT * FROM reminders
+            ORDER BY due_date ASC, due_time ASC
+        """)
         reminders = c.fetchall()
 
-        c.execute("SELECT title, due_date, due_time FROM reminders WHERE category='Class' AND week=?", (selected_week,))
+        # Sort only "Class" category reminders for the selected week
+        c.execute("""
+            SELECT title, due_date, due_time
+            FROM reminders
+            WHERE category='Class' AND week=?
+            ORDER BY due_date ASC, due_time ASC
+        """, (selected_week,))
         classes = c.fetchall()
 
     return render_template('index.html', reminders=reminders, classes=classes, selected_week=selected_week)
+
 
 @app.route('/add', methods=['POST'])
 def add():
