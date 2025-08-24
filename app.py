@@ -1,8 +1,22 @@
 from flask import Flask, render_template, request, redirect
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
+
+# Week A or B
+def get_week_ab(date_str):
+    """Given a date string YYYY-MM-DD, return 'A' or 'B'."""
+    date = datetime.strptime(date_str, "%Y-%m-%d")
+    year_start = datetime(date.year, 1, 1)
+
+    # Find the first Monday of the year
+    first_monday = year_start + timedelta(days=(7 - year_start.weekday()) % 7)
+
+    # How many full weeks have passed since that first Monday
+    week_number = ((date - first_monday).days // 7)
+
+    return 'A' if week_number % 2 == 0 else 'B'
 
 # Format for rendering dates in timetable
 @app.template_filter('datetimeformat')
@@ -52,20 +66,22 @@ def index():
     return render_template('index.html', reminders=reminders, classes=classes, selected_week=selected_week)
 
 @app.route('/add', methods=['POST'])
-def add():
+def add_reminder():
     title = request.form['title']
     due_date = request.form['due_date']
-    time_am = request.form['due_time_am']
-    time_pm = request.form['due_time_pm']
+    due_time = request.form.get('due_time_am') or request.form.get('due_time_pm')
     category = request.form['category']
-    week = request.form.get('week', 'A')
+    completed = 0
 
-    due_time = time_am if time_am else time_pm
+    # Automatically assign week based on date for "Class" category
+    week = get_week_ab(due_date) if category == 'Class' else ''
 
     with sqlite3.connect('data.db') as conn:
         c = conn.cursor()
-        c.execute("INSERT INTO reminders (title, due_date, due_time, category, week) VALUES (?, ?, ?, ?, ?)",
-                  (title, due_date, due_time, category, week))
+        c.execute("""
+            INSERT INTO reminders (title, due_date, due_time, category, completed, week)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (title, due_date, due_time, category, completed, week))
         conn.commit()
     return redirect('/')
 
