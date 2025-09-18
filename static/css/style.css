@@ -78,3 +78,10 @@ select[name="due_time_pm"] {
 .week-btn:hover {
     background-color: #0056b3;
 }
+
+.week-btn.inactive {
+    background-color: #ccc;
+    color: #666;
+    cursor: default;
+    pointer-events: none;
+}

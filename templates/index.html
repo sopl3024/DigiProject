@@ -53,13 +53,22 @@
             {% endfor %}
         </ul>
 
-                <!-- Week Switcher -->
+        <!-- Week Switcher -->
         <div style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0;">
-            <a href="/?week=A" class="week-btn">⬅ Week A</a>
-            <span><strong>Currently: Week {{ selected_week }}</strong></span>
-            <a href="/?week=B" class="week-btn">Week B ➡</a>
-        </div>
+            {% if selected_week == 'A' %}
+                <span class="week-btn inactive">⬅ Week A</span>
+            {% else %}
+                <a href="/?week=A" class="week-btn">⬅ Week A</a>
+            {% endif %}
 
+            <span><strong>Currently: Week {{ selected_week }}</strong></span>
+
+            {% if selected_week == 'B' %}
+                <span class="week-btn inactive">Week B ➡</span>
+            {% else %}
+                <a href="/?week=B" class="week-btn">Week B ➡</a>
+            {% endif %}
+        </div>
         <table>
             <tr>
                 <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th>
