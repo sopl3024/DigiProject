@@ -29,18 +29,21 @@ def init_db():
 
 @app.route('/')
 def index():
-    selected_week = request.args.get('week', 'A')
+    # Default week is current one
+    week_num = datetime.now().isocalendar()[1]
+    current_week = 'A' if week_num % 2 == 0 else 'B'
+
+    # If user clicked arrow, override with ?week=A or ?week=B
+    selected_week = request.args.get('week', current_week)
+
     with sqlite3.connect('data.db') as conn:
         c = conn.cursor()
-
-        # Sort all reminders by combined datetime
         c.execute("""
             SELECT * FROM reminders
             ORDER BY datetime(due_date || ' ' || due_time) ASC
         """)
         reminders = c.fetchall()
 
-        # Sort only "Class" category reminders for timetable by combined datetime
         c.execute("""
             SELECT title, due_date, due_time
             FROM reminders
@@ -58,7 +61,13 @@ def add():
     time_am = request.form['due_time_am']
     time_pm = request.form['due_time_pm']
     category = request.form['category']
-    week = request.form.get('week', 'A')
+
+    # Pick week based on the due_date instead of "now"
+    try:
+        week_num = datetime.strptime(due_date, "%Y-%m-%d").isocalendar()[1]
+        week = 'A' if week_num % 2 == 0 else 'B'
+    except:
+        week = 'A'  # fallback if date parse fails
 
     due_time = time_am if time_am else time_pm
 

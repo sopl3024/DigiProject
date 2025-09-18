@@ -36,10 +36,6 @@
                 <option value="Exam">Exam</option>
                 <option value="Class">Class</option>
             </select>
-            <select name="week">
-                <option value="A">Week A</option>
-                <option value="B">Week B</option>
-            </select>
             <button type="submit">Add</button>
         </form>
 
@@ -57,10 +53,11 @@
             {% endfor %}
         </ul>
 
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-            <a href="/?week=A">&#8592; Week A</a>
-            <h2>Timetable ({{ selected_week }})</h2>
-            <a href="/?week=B">Week B &#8594;</a>
+                <!-- Week Switcher -->
+        <div style="text-align:center; margin: 10px 0;">
+            <a href="/?week=A">⬅ Week A</a> | 
+            <strong>Currently: Week {{ selected_week }}</strong> | 
+            <a href="/?week=B">Week B ➡</a>
         </div>
 
         <table>
