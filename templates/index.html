@@ -4,26 +4,6 @@
     <meta charset="UTF-8">
     <title>Student Organizer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        .week-switcher {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 10px;
-            gap: 10px;
-        }
-        .week-switcher button {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 6px;
-            background: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-        .week-switcher span {
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -56,35 +36,31 @@
                 <option value="Exam">Exam</option>
                 <option value="Class">Class</option>
             </select>
+            <select name="week">
+                <option value="A">Week A</option>
+                <option value="B">Week B</option>
+            </select>
             <button type="submit">Add</button>
         </form>
 
         <ul class="reminder-list">
             {% for r in reminders %}
             <li class="{% if r[5] %}completed{% endif %}">
-                <strong>{{ r[1] }}</strong> ({{ r[2] }}) - {{ r[3] }} - {{r[4]}}
+                <strong>{{ r[1] }}</strong> ({{ r[2] }}) - {{ r[3] }} - {{ r[4] }} - Week {{ r[6] }}
                 {% if not r[5] %}
-                <a href="/complete/{{ r[0] }}">✅</a>
+                    <a href="/complete/{{ r[0] }}">✅</a>
                 {% else %}
-                <a href="/uncomplete/{{ r[0] }}">✔️</a>
+                    <a href="/uncomplete/{{ r[0] }}">✔️</a>
                 {% endif %}
                 <a href="/delete/{{ r[0] }}">🗑️</a>
             </li>
             {% endfor %}
         </ul>
 
-        <h2>Timetable</h2>
-
-        <div class="week-switcher">
-            <form method="GET" action="/" style="display:inline;">
-                <input type="hidden" name="week" value="A">
-                <button type="submit">&larr;</button>
-            </form>
-            <span>Week {{ current_week }}</span>
-            <form method="GET" action="/" style="display:inline;">
-                <input type="hidden" name="week" value="B">
-                <button type="submit">&rarr;</button>
-            </form>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="/?week=A">&#8592; Week A</a>
+            <h2>Timetable ({{ selected_week }})</h2>
+            <a href="/?week=B">Week B &#8594;</a>
         </div>
 
         <table>
@@ -97,7 +73,7 @@
                 <td>
                     {% for class in classes %}
                         {% set weekday = class[1]|datetimeformat("%a") %}
-                        {% if weekday == day and class[6] == current_week %}
+                        {% if weekday == day %}
                             <div>
                                 <strong>{{ class[0] }}</strong><br>
                                 <small>{{ class[2] }}</small>
