@@ -54,10 +54,10 @@
         </ul>
 
                 <!-- Week Switcher -->
-        <div style="text-align:center; margin: 10px 0;">
-            <a href="/?week=A">⬅ Week A</a> | 
-            <strong>Currently: Week {{ selected_week }}</strong> | 
-            <a href="/?week=B">Week B ➡</a>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0;">
+            <a href="/?week=A" class="week-btn">⬅ Week A</a>
+            <span><strong>Currently: Week {{ selected_week }}</strong></span>
+            <a href="/?week=B" class="week-btn">Week B ➡</a>
         </div>
 
         <table>
