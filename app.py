@@ -46,14 +46,15 @@ def index():
         reminders = c.fetchall()
 
         c.execute("""
-            SELECT title, due_date, start_time, end_time
+            SELECT title, due_date, start_time, end_time, category
             FROM reminders
-            WHERE category='Class' AND week=?
+            WHERE (category='Class' OR category='Exam') AND week=?
             ORDER BY datetime(due_date || ' ' || start_time) ASC
         """, (selected_week,))
-        classes = c.fetchall()
+        timetable_items = c.fetchall()
 
-    return render_template('index.html', reminders=reminders, classes=classes, selected_week=selected_week)
+
+    return render_template('index.html', reminders=reminders, timetable_items=timetable_items, selected_week=selected_week)
 
 @app.route('/add', methods=['POST'])
 def add():

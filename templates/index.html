@@ -105,15 +105,17 @@
                 {% set days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] %}
                 {% for day in days %}
                 <td>
-                    {% for class in classes %}
-                        {% set weekday = class[1]|datetimeformat("%a") %}
+                    {% for item in timetable_items %}
+                        {% set weekday = item[1]|datetimeformat("%a") %}
                         {% if weekday == day %}
-                            <div>
-                                <strong>{{ class[0] }}</strong><br>
-                                <small>{{ class[2] }} → {{ class[3] }}</small>
+                            <div style="background-color: '{{ '#ffe0e0' if item[4] == 'Exam' else '#e8f0ff' }}'';">
+                                <strong>{{ item[0] }}</strong><br>
+                                <small>{{ item[2] }} - {{ item[3] }}</small><br>
+                                <em>{{ item[4] }}</em>
                             </div>
                         {% endif %}
                     {% endfor %}
+
                 </td>
                 {% endfor %}
             </tr>
