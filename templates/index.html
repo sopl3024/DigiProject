@@ -9,60 +9,45 @@
     <div class="container">
         <h1>Reminders</h1>
         <form method="POST" action="/add">
+            <!-- Reminder Title -->
             <input type="text" name="title" placeholder="Reminder Title" required>
+
+            <!-- Due Date -->
             <input type="date" name="due_date" required>
 
             <!-- Start Time -->
             <label><strong>Start Time:</strong></label>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <select name="start_time_am" style="width: 120px;">
-                    <option value="">-- AM --</option>
-                    {% for hour in range(6, 12) %}
-                        {% for minute in [0, 15, 30, 45] %}
-                            {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
-                            <option value="{{ time_val }}">{{ time_val }}</option>
-                        {% endfor %}
+            <select name="start_time" required style="width: 150px; margin-bottom: 10px;">
+                <option value="">-- Select Start Time --</option>
+                {% for hour in range(6, 22) %}
+                    {% for minute in [0, 15, 30, 45] %}
+                        {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
+                        <option value="{{ time_val }}">{{ time_val }}</option>
                     {% endfor %}
-                </select>
-                <select name="start_time_pm" style="width: 120px;">
-                    <option value="">-- PM --</option>
-                    {% for hour in range(12, 22) %}
-                        {% for minute in [0, 15, 30, 45] %}
-                            {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
-                            <option value="{{ time_val }}">{{ time_val }}</option>
-                        {% endfor %}
-                    {% endfor %}
-                </select>
-            </div>
+                {% endfor %}
+            </select>
 
             <!-- End Time -->
             <label><strong>End Time:</strong></label>
-            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <select name="end_time_am" style="width: 120px;">
-                    <option value="">-- AM --</option>
-                    {% for hour in range(6, 12) %}
-                        {% for minute in [0, 15, 30, 45] %}
-                            {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
-                            <option value="{{ time_val }}">{{ time_val }}</option>
-                        {% endfor %}
+            <select name="end_time" required style="width: 150px; margin-bottom: 10px;">
+                <option value="">-- Select End Time --</option>
+                {% for hour in range(6, 22) %}
+                    {% for minute in [0, 15, 30, 45] %}
+                        {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
+                        <option value="{{ time_val }}">{{ time_val }}</option>
                     {% endfor %}
-                </select>
-                <select name="end_time_pm" style="width: 120px;">
-                    <option value="">-- PM --</option>
-                    {% for hour in range(12, 22) %}
-                        {% for minute in [0, 15, 30, 45] %}
-                            {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
-                            <option value="{{ time_val }}">{{ time_val }}</option>
-                        {% endfor %}
-                    {% endfor %}
-                </select>
-            </div>
+                {% endfor %}
+            </select>
 
-            <select name="category">
+            <!-- Category -->
+            <select name="category" required>
+                <option value="">-- Select Category --</option>
                 <option value="Reminder">Reminder</option>
                 <option value="Exam">Exam</option>
                 <option value="Class">Class</option>
             </select>
+
+            <!-- Submit Button -->
             <button type="submit">Add</button>
         </form>
 

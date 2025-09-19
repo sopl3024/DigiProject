@@ -60,30 +60,23 @@ def index():
 def add():
     title = request.form['title']
     due_date = request.form['due_date']
-    
-    # Start times
-    time_am = request.form['start_time_am']
-    time_pm = request.form['start_time_pm']
-    start_time = time_am if time_am else time_pm
-
-    # End times
-    end_am = request.form['end_time_am']
-    end_pm = request.form['end_time_pm']
-    end_time = end_am if end_am else end_pm
-
+    start_time = request.form['start_time']
+    end_time = request.form['end_time']
     category = request.form['category']
 
-    # Pick week based on the due_date instead of "now"
+    # Determine week based on due_date
     try:
         week_num = datetime.strptime(due_date, "%Y-%m-%d").isocalendar()[1]
         week = 'A' if week_num % 2 == 0 else 'B'
     except:
-        week = 'A'  
+        week = 'A'
 
     with sqlite3.connect('data.db') as conn:
         c = conn.cursor()
-        c.execute("INSERT INTO reminders (title, due_date, start_time, end_time, category, week) VALUES (?, ?, ?, ?, ?, ?)",
-                  (title, due_date, start_time, end_time, category, week))
+        c.execute(
+            "INSERT INTO reminders (title, due_date, start_time, end_time, category, week) VALUES (?, ?, ?, ?, ?, ?)",
+            (title, due_date, start_time, end_time, category, week)
+        )
         conn.commit()
     return redirect('/')
 
