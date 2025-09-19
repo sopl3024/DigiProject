@@ -85,3 +85,29 @@ select[name="due_time_pm"] {
     cursor: default;
     pointer-events: none;
 }
+
+.timetable-item {
+position: relative;
+padding: 5px;
+margin-bottom: 5px;
+border-radius: 5px;
+}
+
+.timetable-item a.delete {
+position: absolute;
+top: 2px;
+right: 5px;
+color: rgb(255, 0, 0);
+text-decoration: none;
+font-weight: bold;
+}
+
+.week-btn.inactive {
+color: grey;
+text-decoration: none;
+}
+
+.reminder-list li.completed {
+text-decoration: line-through;
+color: grey;
+}

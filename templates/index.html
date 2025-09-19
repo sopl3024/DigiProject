@@ -4,112 +4,129 @@
     <meta charset="UTF-8">
     <title>Student Organizer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .timetable-item {
+            position: relative;
+            padding: 5px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+        .timetable-item a.delete {
+            position: absolute;
+            top: 2px;
+            right: 5px;
+            color: red;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .week-btn.inactive {
+            color: grey;
+            text-decoration: none;
+        }
+        .reminder-list li.completed {
+            text-decoration: line-through;
+            color: grey;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Reminders</h1>
-        <form method="POST" action="/add">
-            <!-- Reminder Title -->
-            <input type="text" name="title" placeholder="Reminder Title" required>
+<div class="container">
+    <h1>Reminders</h1>
 
-            <!-- Due Date -->
-            <input type="date" name="due_date" required>
+    <form method="POST" action="/add">
+        <input type="text" name="title" placeholder="Reminder Title" required>
+        <input type="date" name="due_date" required>
 
-            <!-- Start Time -->
-            <label><strong>Start Time:</strong></label>
-            <select name="start_time" required style="width: 150px; margin-bottom: 10px;">
-                <option value="">-- Select Start Time --</option>
-                {% for hour in range(6, 22) %}
-                    {% for minute in [0, 15, 30, 45] %}
-                        {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
-                        <option value="{{ time_val }}">{{ time_val }}</option>
-                    {% endfor %}
+        <label><strong>Start Time:</strong></label>
+        <select name="start_time" required style="width: 150px; margin-bottom: 10px;">
+            <option value="">-- Select Start Time --</option>
+            {% for hour in range(6, 22) %}
+                {% for minute in [0, 15, 30, 45] %}
+                    {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
+                    <option value="{{ time_val }}">{{ time_val }}</option>
                 {% endfor %}
-            </select>
-
-            <!-- End Time -->
-            <label><strong>End Time:</strong></label>
-            <select name="end_time" required style="width: 150px; margin-bottom: 10px;">
-                <option value="">-- Select End Time --</option>
-                {% for hour in range(6, 22) %}
-                    {% for minute in [0, 15, 30, 45] %}
-                        {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
-                        <option value="{{ time_val }}">{{ time_val }}</option>
-                    {% endfor %}
-                {% endfor %}
-            </select>
-
-            <!-- Category -->
-            <select name="category" required>
-                <option value="">-- Select Category --</option>
-                <option value="Reminder">Reminder</option>
-                <option value="Exam">Exam</option>
-                <option value="Class">Class</option>
-            </select>
-
-            <!-- Submit Button -->
-            <button type="submit">Add</button>
-        </form>
-
-        <ul class="reminder-list">
-            {% for r in reminders %}
-            <li class="{% if r[6] %}completed{% endif %}">
-                <strong>{{ r[1] }}</strong> ({{ r[2] }}) - {{ r[3] }} → {{ r[4] }} - {{ r[5] }} - Week {{ r[7] }}
-                {% if not r[6] %}
-                    <a href="/complete/{{ r[0] }}">✅</a>
-                {% else %}
-                    <a href="/uncomplete/{{ r[0] }}">✔️</a>
-                {% endif %}
-                <a href="/delete/{{ r[0] }}">🗑️</a>
-            </li>
             {% endfor %}
-        </ul>
+        </select>
 
-        <!-- Week Switcher -->
-        <div style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0;">
-            {% if selected_week == 'A' %}
-                <span class="week-btn inactive">⬅ Week A</span>
-            {% else %}
-                <a href="/?week=A" class="week-btn">⬅ Week A</a>
+        <label><strong>End Time:</strong></label>
+        <select name="end_time" required style="width: 150px; margin-bottom: 10px;">
+            <option value="">-- Select End Time --</option>
+            {% for hour in range(6, 22) %}
+                {% for minute in [0, 15, 30, 45] %}
+                    {% set time_val = "{:02d}:{:02d}".format(hour, minute) %}
+                    <option value="{{ time_val }}">{{ time_val }}</option>
+                {% endfor %}
+            {% endfor %}
+        </select>
+
+        <select name="category" required>
+            <option value="">-- Select Category --</option>
+            <option value="Reminder">Reminder</option>
+            <option value="Exam">Exam</option>
+            <option value="Class">Class</option>
+        </select>
+
+        <button type="submit">Add</button>
+    </form>
+
+    <!-- Reminder List (exclude Classes/Exams) -->
+    <ul class="reminder-list">
+        {% for r in reminders %}
+            {% if r[5] != 'Class' and r[5] != 'Exam' %}
+                <li class="{% if r[6] %}completed{% endif %}">
+                    <strong>{{ r[1] }}</strong> ({{ r[2] }}) - {{ r[3] }} → {{ r[4] }} - {{ r[5] }} - Week {{ r[7] }}
+                    {% if not r[6] %}
+                        <a href="/complete/{{ r[0] }}">✅</a>
+                    {% else %}
+                        <a href="/uncomplete/{{ r[0] }}">✔️</a>
+                    {% endif %}
+                    <a href="/delete/{{ r[0] }}">🗑️</a>
+                </li>
             {% endif %}
+        {% endfor %}
+    </ul>
 
-            <span><strong>Currently: Week {{ selected_week }}</strong></span>
+    <!-- Week Switcher -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0;">
+        {% if selected_week == 'A' %}
+            <span class="week-btn inactive">⬅ Week A</span>
+        {% else %}
+            <a href="/?week=A" class="week-btn">⬅ Week A</a>
+        {% endif %}
 
-            {% if selected_week == 'B' %}
-                <span class="week-btn inactive">Week B ➡</span>
-            {% else %}
-                <a href="/?week=B" class="week-btn">Week B ➡</a>
-            {% endif %}
-        </div>
+        <span><strong>Currently: Week {{ selected_week }}</strong></span>
 
-        <table>
-            <tr>
-                <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th>
-            </tr>
-            <tr>
-                {% set days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] %}
-                {% for day in days %}
+        {% if selected_week == 'B' %}
+            <span class="week-btn inactive">Week B ➡</span>
+        {% else %}
+            <a href="/?week=B" class="week-btn">Week B ➡</a>
+        {% endif %}
+    </div>
+
+    <!-- Timetable -->
+    <table>
+        <tr>
+            <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th>
+        </tr>
+        <tr>
+            {% set days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] %}
+            {% for day in days %}
                 <td>
                     {% for item in timetable_items %}
-                        {% set weekday = item[1]|datetimeformat("%a") %}
+                        {% set weekday = item[2]|weekday %}
                         {% if weekday == day %}
-                            <div style="background-color: '{{ '#ffe0e0' if item[4] == 'Exam' else '#e8f0ff' }}'';">
-                                <strong>{{ item[0] }}</strong><br>
-                                <small>{{ item[2] }} - {{ item[3] }}</small><br>
-                                <em>{{ item[4] }}</em>
+                            <div class="timetable-item" style="background-color: {{ '#ffe0e0' if item[5] == 'Exam' else '#e8f0ff' }}">
+                                <a href="/delete/{{ item[0] }}" class="delete">✖</a>
+                                <strong>{{ item[1] }}</strong><br>
+                                <small>{{ item[3] }} - {{ item[4] }}</small><br>
+                                <em>{{ item[5] }}</em>
                             </div>
                         {% endif %}
                     {% endfor %}
-
                 </td>
-                {% endfor %}
-            </tr>
-        </table>
-
-        <h2>Filters</h2>
-        <select><option>Reminder</option></select>
-        <select><option>Exam</option></select>
-        <select><option>Class</option></select>
-    </div>
+            {% endfor %}
+        </tr>
+    </table>
+</div>
 </body>
 </html>

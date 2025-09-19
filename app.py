@@ -4,11 +4,18 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Format for rendering dates in timetable
+# Template filters
 @app.template_filter('datetimeformat')
 def datetimeformat(value, format='%H:%M'):
     try:
         return datetime.strptime(value, '%Y-%m-%d').strftime(format)
+    except:
+        return value
+
+@app.template_filter('weekday')
+def weekday(value):
+    try:
+        return datetime.strptime(value, '%Y-%m-%d').strftime('%a')  # Mon, Tue, etc.
     except:
         return value
 
@@ -30,29 +37,27 @@ def init_db():
 
 @app.route('/')
 def index():
-    # Default week is current one
     week_num = datetime.now().isocalendar()[1]
     current_week = 'A' if week_num % 2 == 0 else 'B'
-
-    # If user clicked arrow, override with ?week=A or ?week=B
     selected_week = request.args.get('week', current_week)
 
     with sqlite3.connect('data.db') as conn:
         c = conn.cursor()
+        # All reminders
         c.execute("""
             SELECT * FROM reminders
             ORDER BY datetime(due_date || ' ' || start_time) ASC
         """)
         reminders = c.fetchall()
 
+        # Timetable: only Classes and Exams
         c.execute("""
-            SELECT title, due_date, start_time, end_time, category
+            SELECT id, title, due_date, start_time, end_time, category
             FROM reminders
             WHERE (category='Class' OR category='Exam') AND week=?
             ORDER BY datetime(due_date || ' ' || start_time) ASC
         """, (selected_week,))
         timetable_items = c.fetchall()
-
 
     return render_template('index.html', reminders=reminders, timetable_items=timetable_items, selected_week=selected_week)
 
@@ -64,7 +69,6 @@ def add():
     end_time = request.form['end_time']
     category = request.form['category']
 
-    # Determine week based on due_date
     try:
         week_num = datetime.strptime(due_date, "%Y-%m-%d").isocalendar()[1]
         week = 'A' if week_num % 2 == 0 else 'B'
@@ -77,6 +81,15 @@ def add():
             "INSERT INTO reminders (title, due_date, start_time, end_time, category, week) VALUES (?, ?, ?, ?, ?, ?)",
             (title, due_date, start_time, end_time, category, week)
         )
+        conn.commit()
+
+    return redirect('/')
+
+@app.route('/delete/<int:reminder_id>')
+def delete(reminder_id):
+    with sqlite3.connect('data.db') as conn:
+        c = conn.cursor()
+        c.execute("DELETE FROM reminders WHERE id = ?", (reminder_id,))
         conn.commit()
     return redirect('/')
 
@@ -93,14 +106,6 @@ def uncomplete(reminder_id):
     with sqlite3.connect('data.db') as conn:
         c = conn.cursor()
         c.execute("UPDATE reminders SET completed = 0 WHERE id = ?", (reminder_id,))
-        conn.commit()
-    return redirect('/')
-
-@app.route('/delete/<int:reminder_id>')
-def delete(reminder_id):
-    with sqlite3.connect('data.db') as conn:
-        c = conn.cursor()
-        c.execute("DELETE FROM reminders WHERE id = ?", (reminder_id,))
         conn.commit()
     return redirect('/')
 
