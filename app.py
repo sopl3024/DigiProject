@@ -20,7 +20,8 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             due_date TEXT,
-            due_time TEXT,
+            start_time TEXT,
+            end_time TEXT,
             category TEXT,
             completed INTEGER DEFAULT 0,
             week TEXT DEFAULT 'A'
@@ -40,15 +41,15 @@ def index():
         c = conn.cursor()
         c.execute("""
             SELECT * FROM reminders
-            ORDER BY datetime(due_date || ' ' || due_time) ASC
+            ORDER BY datetime(due_date || ' ' || start_time) ASC
         """)
         reminders = c.fetchall()
 
         c.execute("""
-            SELECT title, due_date, due_time
+            SELECT title, due_date, start_time, end_time
             FROM reminders
             WHERE category='Class' AND week=?
-            ORDER BY datetime(due_date || ' ' || due_time) ASC
+            ORDER BY datetime(due_date || ' ' || start_time) ASC
         """, (selected_week,))
         classes = c.fetchall()
 
@@ -58,8 +59,17 @@ def index():
 def add():
     title = request.form['title']
     due_date = request.form['due_date']
-    time_am = request.form['due_time_am']
-    time_pm = request.form['due_time_pm']
+    
+    # Start times
+    time_am = request.form['start_time_am']
+    time_pm = request.form['start_time_pm']
+    start_time = time_am if time_am else time_pm
+
+    # End times
+    end_am = request.form['end_time_am']
+    end_pm = request.form['end_time_pm']
+    end_time = end_am if end_am else end_pm
+
     category = request.form['category']
 
     # Pick week based on the due_date instead of "now"
@@ -67,14 +77,12 @@ def add():
         week_num = datetime.strptime(due_date, "%Y-%m-%d").isocalendar()[1]
         week = 'A' if week_num % 2 == 0 else 'B'
     except:
-        week = 'A'  # fallback if date parse fails
-
-    due_time = time_am if time_am else time_pm
+        week = 'A'  
 
     with sqlite3.connect('data.db') as conn:
         c = conn.cursor()
-        c.execute("INSERT INTO reminders (title, due_date, due_time, category, week) VALUES (?, ?, ?, ?, ?)",
-                  (title, due_date, due_time, category, week))
+        c.execute("INSERT INTO reminders (title, due_date, start_time, end_time, category, week) VALUES (?, ?, ?, ?, ?, ?)",
+                  (title, due_date, start_time, end_time, category, week))
         conn.commit()
     return redirect('/')
 
